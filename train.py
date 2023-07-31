@@ -51,6 +51,10 @@ def generate_objective(marking_points_batch, device):
     return objective, gradient
 
 
+def collate_f(x):
+    return list(zip(*x))
+
+
 def train_detector(args):
     """Train directional point detector."""
     args.cuda = not args.disable_cuda and torch.cuda.is_available()
@@ -73,7 +77,7 @@ def train_detector(args):
     data_loader = DataLoader(data.ParkingSlotDataset(args.dataset_directory),
                              batch_size=args.batch_size, shuffle=True,
                              num_workers=args.data_loading_workers,
-                             collate_fn=lambda x: list(zip(*x)))
+                             collate_fn=collate_f)
 
     for epoch_idx in range(args.num_epochs):
         for iter_idx, (images, marking_points) in enumerate(data_loader):
